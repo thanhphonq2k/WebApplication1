@@ -1,0 +1,15 @@
+# .NET
+**/bin/
+**/obj/
+**/.vs/
+*.user
+*.suo
+
+# Uploads
+WebApplication1/Photos/*
+!WebApplication1/Photos/.gitkeep
+
+# OS / IDE
+.DS_Store
+Thumbs.db
+.idea/
