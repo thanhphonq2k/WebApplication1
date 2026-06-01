@@ -1,37 +1,28 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Microsoft.AspNetCore.Mvc;
 using System.Data;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 using WebApplication1.Models;
-using Microsoft.AspNetCore.Hosting;
-using System.IO;
 
 namespace WebApplication1.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class EmployeeController : ControllerBase
+    public class PositionController : ControllerBase
     {
         private readonly IConfiguration _configuration;
-        private readonly IWebHostEnvironment _env;
 
-        public EmployeeController(IConfiguration configuration, IWebHostEnvironment env)
+        public PositionController(IConfiguration configuration)
         {
             _configuration = configuration;
-            _env = env;
         }
 
         [HttpGet]
         public JsonResult Get()
         {
             string query = @"
-                             select EmployeeId, EmployeeName, Department, Position, convert(varchar(10),DateOfJoining,120) as DateOfJoining, PhotoFileName from
-                             dbo.Employee";
+                             select PositionId, PositionName from
+                             dbo.Position";
             DataTable table = new DataTable();
             string sqlDataSource = _configuration.GetConnectionString("EmployeeAppCon");
             SqlDataReader myReader;
@@ -51,11 +42,11 @@ namespace WebApplication1.Controllers
         }
 
         [HttpPost]
-        public JsonResult Post(Employee em)
+        public JsonResult Post(Position pos)
         {
             string query = @"
-                             insert into dbo.Employee(EmployeeName, Department, Position, DateOfJoining, PhotoFileName)
-                             values (@EmployeeName, @Department, @Position, @DateOfJoining, @PhotoFileName)";
+                             insert into dbo.Position
+                             values (@PositionName)";
             DataTable table = new DataTable();
             string sqlDataSource = _configuration.GetConnectionString("EmployeeAppCon");
             SqlDataReader myReader;
@@ -64,11 +55,7 @@ namespace WebApplication1.Controllers
                 myCon.Open();
                 using (SqlCommand myCommand = new SqlCommand(query, myCon))
                 {
-                    myCommand.Parameters.AddWithValue("@EmployeeName", em.EmployeeName);
-                    myCommand.Parameters.AddWithValue("@Department", em.Department);
-                    myCommand.Parameters.AddWithValue("@Position", em.Position);
-                    myCommand.Parameters.AddWithValue("@DateOfJoining", em.DateOfJoining);
-                    myCommand.Parameters.AddWithValue("@PhotoFileName", em.PhotoFileName);
+                    myCommand.Parameters.AddWithValue("@PositionName", pos.PositionName);
                     myReader = myCommand.ExecuteReader();
                     table.Load(myReader);
                     myReader.Close();
@@ -80,16 +67,12 @@ namespace WebApplication1.Controllers
         }
 
         [HttpPut]
-        public JsonResult Put(Employee em)
+        public JsonResult Put(Position pos)
         {
             string query = @"
-                             update dbo.Employee
-                             set EmployeeName = @EmployeeName,
-                                 Department = @Department,
-                                 Position = @Position,
-                                 DateOfJoining = @DateOfJoining,
-                                 PhotoFileName = @PhotoFileName
-                             where EmployeeId = @EmployeeId";
+                             update dbo.Position
+                             set PositionName = @PositionName
+                             where PositionId = @PositionId";
             DataTable table = new DataTable();
             string sqlDataSource = _configuration.GetConnectionString("EmployeeAppCon");
             SqlDataReader myReader;
@@ -98,12 +81,8 @@ namespace WebApplication1.Controllers
                 myCon.Open();
                 using (SqlCommand myCommand = new SqlCommand(query, myCon))
                 {
-                    myCommand.Parameters.AddWithValue("@EmployeeId", em.EmployeeId);
-                    myCommand.Parameters.AddWithValue("@EmployeeName", em.EmployeeName);
-                    myCommand.Parameters.AddWithValue("@Department", em.Department);
-                    myCommand.Parameters.AddWithValue("@Position", em.Position);
-                    myCommand.Parameters.AddWithValue("@DateOfJoining", em.DateOfJoining);
-                    myCommand.Parameters.AddWithValue("@PhotoFileName", em.PhotoFileName);
+                    myCommand.Parameters.AddWithValue("@PositionId", pos.PositionId);
+                    myCommand.Parameters.AddWithValue("@PositionName", pos.PositionName);
                     myReader = myCommand.ExecuteReader();
                     table.Load(myReader);
                     myReader.Close();
@@ -118,8 +97,8 @@ namespace WebApplication1.Controllers
         public JsonResult Delete(int id)
         {
             string query = @"
-                             delete from dbo.Employee
-                             where EmployeeId = @EmployeeId";
+                             delete from dbo.Position
+                             where PositionId = @PositionId";
             DataTable table = new DataTable();
             string sqlDataSource = _configuration.GetConnectionString("EmployeeAppCon");
             SqlDataReader myReader;
@@ -128,7 +107,7 @@ namespace WebApplication1.Controllers
                 myCon.Open();
                 using (SqlCommand myCommand = new SqlCommand(query, myCon))
                 {
-                    myCommand.Parameters.AddWithValue("@EmployeeId", id);
+                    myCommand.Parameters.AddWithValue("@PositionId", id);
                     myReader = myCommand.ExecuteReader();
                     table.Load(myReader);
                     myReader.Close();
@@ -137,30 +116,6 @@ namespace WebApplication1.Controllers
             }
 
             return new JsonResult("Deleted Successful");
-        }
-
-        [Route("SaveFile")]
-        [HttpPost]
-        public JsonResult SaveFile()
-        {
-            try
-            {
-                var httpRequest = Request.Form;
-                var postedFile = httpRequest.Files[0];
-                string filename = postedFile.FileName;
-                var physicalPath = _env.ContentRootPath + "/Photos/" + filename;
-
-                using (var stream = new FileStream(physicalPath, FileMode.Create))
-                {
-                    postedFile.CopyTo(stream);
-                }
-
-                return new JsonResult(filename);
-            }
-            catch(Exception)
-            {
-                return new JsonResult("Đào Thanh Phong.jpg");
-            }
         }
     }
 }

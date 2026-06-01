@@ -84,3 +84,4 @@ D:\SourceCode\API\WebApplication1\WebApplication1\bin\Debug\netcoreapp3.1\Swashb
 D:\SourceCode\API\WebApplication1\WebApplication1\bin\Debug\netcoreapp3.1\Swashbuckle.AspNetCore.SwaggerGen.dll
 D:\SourceCode\API\WebApplication1\WebApplication1\bin\Debug\netcoreapp3.1\Swashbuckle.AspNetCore.SwaggerUI.dll
 D:\SourceCode\API\WebApplication1\WebApplication1\obj\Debug\netcoreapp3.1\WebApplication1.MvcApplicationPartsAssemblyInfo.cs
+D:\SourceCode\API\WebApplication1\WebApplication1\obj\Debug\netcoreapp3.1\WebApplication1.sourcelink.json
